@@ -3,17 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Sheet</title>
+  <title>Моя таблица</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 16px; background: #f0f0f0; }
-    .row { background: white; padding: 12px; margin: 8px 0; border-radius: 8px; display: flex; align-items: center; }
-    .checkbox { margin-right: 12px; width: 20px; height: 20px; }
-    .content { flex: 1; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+      background: #f0f0f0;
+      margin: 0;
+    }
+    .header {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr;
+      font-weight: bold;
+      padding: 12px 8px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr;
+      background: white;
+      padding: 12px 8px;
+      margin: 8px 0;
+      border-radius: 8px;
+      align-items: center;
+      cursor: pointer;
+    }
+    .row:hover {
+      background: #f9f9f9;
+    }
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+    }
+    .col-name { font-weight: bold; }
+    .col-rating { color: #555; text-align: right; }
   </style>
 </head>
 <body>
-  <h2>Моя таблица2</h2>
+  <div class="header">
+    <div></div>
+    <div>Имя</div>
+    <div>Рейтинг</div>  </div>
   <div id="list"></div>
 
   <script>
@@ -28,20 +62,18 @@
       try {
         const res = await fetch(PROXY_URL);
         const data = await res.json();
-        if (!data.success) throw new Error(data.error || 'Ошибка');
+        if (!data.success) throw new Error(data.error || 'Ошибка загрузки');
 
         const list = document.getElementById('list');
         list.innerHTML = data.result.map(row => `
           <div class="row" onclick="toggle(${row.id})">
             <input type="checkbox" class="checkbox" ${row.checked ? 'checked' : ''} disabled>
-            <div class="content">
-              <div><b>${row.col2}</b></div>
-              <div>${row.col3}</div>
-            </div>
+            <div class="col-name">${row.col2 || ''}</div>
+            <div class="col-rating">${row.col3 || ''}</div>
           </div>
         `).join('');
       } catch (err) {
-        alert('Ошибка загрузки: ' + err.message);
+        alert('❌ Ошибка: ' + err.message);
       }
     }
 
@@ -54,18 +86,15 @@
         });
         const result = await res.json();
         if (result.success) {
-          loadData();
+          loadData(); // обновляем список
         } else {
           alert('Ошибка: ' + result.error);
         }
       } catch (err) {
-        alert('Ошибка сети: ' + err.message);
+        alert('Сетевая ошибка: ' + err.message);
       }
     }
 
     loadData();
-  </script>
-</body>
+  </script></body>
 </html>
-
-
