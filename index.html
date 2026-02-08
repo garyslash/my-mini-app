@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Sheet</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 16px; background: #f0f0f0; }
+    .row { background: white; padding: 12px; margin: 8px 0; border-radius: 8px; display: flex; align-items: center; }
+    .checkbox { margin-right: 12px; width: 20px; height: 20px; }
+    .content { flex: 1; }
+  </style>
+</head>
+<body>
+  <h2>Моя таблица</h2>
+  <div id="list"></div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    const PROXY_URL = 'https://gsheet-proxy-1.vercel.app/api/proxy'; // ← ваш Vercel URL
+
+    async function loadData() {
+      const res = await fetch(PROXY_URL);
+      const { success, data } = await res.json();
+      if (!success) return alert('Ошибка загрузки');
+
+      const list = document.getElementById('list');
+      list.innerHTML = data.map(row => 
+        <div class="row" onclick="toggle(${row.id})">
+          <input type="checkbox" class="checkbox" ${row.checked ? 'checked' : ''} disabled>
+          <div class="content">
+            <div><b>${row.col2}</b></div>
+            <div>${row.col3}</div>
+          </div>
+        </div>
+      ).join('');
+    }
+
+    async function toggle(rowId) {
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIndex: rowId })
+      });
+      const result = await res.json();
+      if (result.success) {
+        loadData(); // обновляем список
+      } else {
+        alert('Ошибка: ' + result.error);
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
