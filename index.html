@@ -31,7 +31,7 @@
         if (!data.success) throw new Error(data.error || 'Ошибка');
 
         const list = document.getElementById('list');
-        list.innerHTML = data.result.map(row => 
+        list.innerHTML = data.result.map(row => `
           <div class="row" onclick="toggle(${row.id})">
             <input type="checkbox" class="checkbox" ${row.checked ? 'checked' : ''} disabled>
             <div class="content">
@@ -39,7 +39,7 @@
               <div>${row.col3}</div>
             </div>
           </div>
-        ).join('');
+        `).join('');
       } catch (err) {
         alert('Ошибка загрузки: ' + err.message);
       }
@@ -67,4 +67,5 @@
   </script>
 </body>
 </html>
+
 
